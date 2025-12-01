@@ -29,6 +29,20 @@ var idTemporizador = null;
 /** controle do andamento do jogo */
 var jogoAtivo = false;
 
+function ajustarLayout() {
+    let gramado = document.getElementById('idGramado');
+    let larguraTela = window.innerWidth;
+    if (larguraTela < 500) {
+        gramado.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    }else {
+        gramado.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    }
+     
+}
+
+window.onload = ajustarLayout;
+window.onresize = ajustarLayout;
+
 // Suporte a teclado para elementos com role="button" e tabindex="0"
 function handleKeyDown(event){
     // Aceita Enter e Space
