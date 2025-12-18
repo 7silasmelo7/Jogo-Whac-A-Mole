@@ -4,20 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/estilo_responsivo.css">
-    <title>Whac-A-Mole</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+        crossorigin="anonymous">
+    <title>Whac-A-Mole - Menu Principal</title>
 </head>
 <body>
-    <section>
-        <div class="banner">
-            <img src="imagens/Whac-A-Mole.jpg" alt="Jogo físico Whac-A-Mole">
+    <!-- Modal de Registro do Jogador -->
+    <div class="modal-overlay" id="modalJogador" style="display: none;">
+        <div class="modal-content">
+            <h2 style="font-family: 'Bungee Spice', sans-serif; text-align: center; margin-bottom: 20px;">Bem-vindo ao Whac-A-Mole!</h2>
+            <form id="formJogador">
+                <div class="form-group">
+                    <label for="nomeJogador">Digite seu nome:</label>
+                    <input type="text" id="nomeJogador" class="form-control" maxlength="20" required placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="dificuldadeModal">Escolha a dificuldade:</label>
+                    <select id="dificuldadeModal" class="form-select">
+                        <option value="facil" selected>Fácil</option>
+                        <option value="medio">Médio</option>
+                        <option value="dificil">Difícil</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Começar Jogo</button>
+                <button type="button" class="btn btn-secondary btn-block mt-2" id="btnCancelar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="menu-principal">
+        <div class="menu-container">
+            <div class="logo-container">
+                <img src="imagens/Whac-A-Mole.jpg" alt="Whac-A-Mole Logo" class="logo-image">
+                <h1 class="game-title">Whac-A-Mole</h1>
+            </div>
+            
+            <div class="menu-buttons">
+                <button class="menu-btn btn-jogar" id="btnJogar">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">Jogar</span>
+                </button>
+                
+                <a href="regras.html" class="menu-btn btn-regras">
+                    <span class="btn-icon">📖</span>
+                    <span class="btn-text">Regras</span>
+                </a>
+                
+                <a href="recordes.html" class="menu-btn btn-recordes">
+                    <span class="btn-icon">🏆</span>
+                    <span class="btn-text">Recordes</span>
+                </a>
+            </div>
+            
+            <div class="footer-info">
+                <p>Desenvolvido por Silas Melo | 2025</p>
+            </div>
         </div>
     </section>
-    <footer>
-        <div class="nextPage">
-            <a href="regras.html" class="circulo">
-                <img src="imagens/arrow-down.png" alt="Seta para baixo" class="arrow">
-            </a>
-        </div>
-    </footer>
+    
+    <script>
+        // Gerenciamento do modal e navegação
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnJogar = document.getElementById('btnJogar');
+            const modalJogador = document.getElementById('modalJogador');
+            const formJogador = document.getElementById('formJogador');
+            const btnCancelar = document.getElementById('btnCancelar');
+            const nomeInput = document.getElementById('nomeJogador');
+            const dificuldadeModal = document.getElementById('dificuldadeModal');
+            
+            // Abrir modal ao clicar em Jogar
+            if (btnJogar) {
+                btnJogar.addEventListener('click', () => {
+                    modalJogador.style.display = 'flex';
+                    nomeInput.focus();
+                });
+            }
+            
+            // Cancelar e fechar modal
+            if (btnCancelar) {
+                btnCancelar.addEventListener('click', () => {
+                    modalJogador.style.display = 'none';
+                    nomeInput.value = '';
+                });
+            }
+            
+            // Submeter formulário e iniciar jogo
+            if (formJogador) {
+                formJogador.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const nome = nomeInput.value.trim();
+                    const dificuldade = dificuldadeModal.value;
+                    
+                    if (nome) {
+                        // Salvar dados do jogador no sessionStorage
+                        sessionStorage.setItem('whacAMoleJogador', nome);
+                        sessionStorage.setItem('whacAMoleDificuldade', dificuldade);
+                        
+                        // Redirecionar para o tabuleiro
+                        window.location.href = 'tabuleiro.html';
+                    }
+                });
+            }
+            
+            // Fechar modal ao clicar fora
+            modalJogador.addEventListener('click', (e) => {
+                if (e.target === modalJogador) {
+                    modalJogador.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

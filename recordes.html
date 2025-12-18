@@ -13,87 +13,135 @@
 <body>
     <header>
         <div class="previousPage">
-            <a href="tabuleiro.html" class="circulo">
+            <a href="index.html" class="circulo" title="Voltar ao Menu">
                 <img src="imagens/arrow-up.png" alt="Seta para cima" class="arrow">
             </a>
         </div>
     </header>
     <section class="records">
-        <div class="contentBox">
-            <h2 class="heading">Records - Top 10</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Colocação</th>
-                        <th>Nome</th>
-                        <th>Pontos</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Asterix</td>
-                        <td>512</td>
-                        <td>20/07/2019</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Obelix</td>
-                        <td>256</td>
-                        <td>01/01/2002</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Panoramix</td>
-                        <td>128</td>
-                        <td>25/06/2009</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Falbala</td>
-                        <td>64</td>
-                        <td>02/04/2005</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Chatotorix</td>
-                        <td>32</td>
-                        <td>12/07/2010</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Ideiafix</td>
-                        <td>16</td>
-                        <td>12/11/2014</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Veteranix</td>
-                        <td>8</td>
-                        <td>12/11/2019</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Naftalina</td>
-                        <td>4</td>
-                        <td>25/07/2018</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Automatix</td>
-                        <td>2</td>
-                        <td>04/02/2004</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>Ielosubmarina</td>
-                        <td>1</td>
-                        <td>28/07/2019</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="records-container">
+            <h2 class="heading">🏆 Records - Top 10</h2>
+            <div class="table-wrapper">
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Pontos</th>
+                            <th class="hide-mobile">Data</th>
+                            <th class="hide-mobile">Dificuldade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaRecordes">
+                        <!-- Os recordes serão carregados dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="legend-mobile">
+                <p><span style="color: green; font-weight: bold;">●</span> Fácil | <span style="color: orange; font-weight: bold;">●</span> Médio | <span style="color: red; font-weight: bold;">●</span> Difícil</p>
+            </div>
         </div>
     </section>
+    
+    <script>
+        // Carregar e exibir recordes do localStorage
+        function carregarRecordes() {
+            const recordesSalvos = localStorage.getItem('whacAMoleRecordes');
+            let recordes = [];
+            
+            if (recordesSalvos) {
+                recordes = JSON.parse(recordesSalvos);
+            } else {
+                // Recordes de exemplo se não houver nenhum salvo
+                recordes = [
+                    { nome: 'Asterix', pontos: 512, data: '20/07/2019', dificuldade: 'medio' },
+                    { nome: 'Obelix', pontos: 256, data: '01/01/2002', dificuldade: 'facil' },
+                    { nome: 'Panoramix', pontos: 128, data: '25/06/2009', dificuldade: 'facil' },
+                    { nome: 'Falbala', pontos: 64, data: '02/04/2005', dificuldade: 'facil' },
+                    { nome: 'Chatotorix', pontos: 32, data: '12/07/2010', dificuldade: 'facil' },
+                    { nome: 'Ideiafix', pontos: 16, data: '12/11/2014', dificuldade: 'facil' },
+                    { nome: 'Veteranix', pontos: 8, data: '12/11/2019', dificuldade: 'facil' },
+                    { nome: 'Naftalina', pontos: 4, data: '25/07/2018', dificuldade: 'facil' },
+                    { nome: 'Automatix', pontos: 2, data: '04/02/2004', dificuldade: 'facil' },
+                    { nome: 'Ielosubmarina', pontos: 1, data: '28/07/2019', dificuldade: 'facil' }
+                ];
+            }
+            
+            // Ordenar por pontuação (decrescente)
+            recordes.sort((a, b) => b.pontos - a.pontos);
+            
+            // Exibir top 10
+            const tbody = document.getElementById('tabelaRecordes');
+            tbody.innerHTML = '';
+            
+            const top10 = recordes.slice(0, 10);
+            
+            if (top10.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Nenhum recorde registrado ainda. Seja o primeiro!</td></tr>';
+            } else {
+                top10.forEach((recorde, index) => {
+                    const tr = document.createElement('tr');
+                    
+                    // Badge de dificuldade
+                    let badgeDificuldade = '';
+                    let corDificuldade = '';
+                    if (recorde.dificuldade === 'facil') {
+                        badgeDificuldade = '<span style="color: green; font-weight: bold;">●</span>';
+                        corDificuldade = 'green';
+                    } else if (recorde.dificuldade === 'medio') {
+                        badgeDificuldade = '<span style="color: orange; font-weight: bold;">●</span>';
+                        corDificuldade = 'orange';
+                    } else if (recorde.dificuldade === 'dificil') {
+                        badgeDificuldade = '<span style="color: red; font-weight: bold;">●</span>';
+                        corDificuldade = 'red';
+                    }
+                    
+                    // Emojis de medalha
+                    let medalha = '';
+                    if (index === 0) medalha = '🥇';
+                    else if (index === 1) medalha = '🥈';
+                    else if (index === 2) medalha = '🥉';
+                    
+                    tr.innerHTML = `
+                        <td data-label="#">${medalha || (index + 1)}</td>
+                        <td data-label="Nome" class="nome-cell">${recorde.nome}</td>
+                        <td data-label="Pontos" class="pontos-cell"><strong>${recorde.pontos}</strong></td>
+                        <td data-label="Data" class="hide-mobile">${recorde.data}</td>
+                        <td data-label="Dif." class="hide-mobile">${badgeDificuldade} ${recorde.dificuldade.charAt(0).toUpperCase() + recorde.dificuldade.slice(1)}</td>
+                    `;
+                    
+                    // Adicionar badge mobile (visível apenas em mobile)
+                    const nomeTd = tr.querySelector('.nome-cell');
+                    nomeTd.innerHTML += `<span class="badge-mobile" style="color: ${corDificuldade};">●</span>`;
+                    
+                    // Destacar top 3
+                    if (index === 0) {
+                        tr.style.backgroundColor = '#ffd700';
+                        tr.style.fontWeight = 'bold';
+                    } else if (index === 1) {
+                        tr.style.backgroundColor = '#c0c0c0';
+                    } else if (index === 2) {
+                        tr.style.backgroundColor = '#cd7f32';
+                    }
+                    
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+        
+        // Função para limpar recordes (opcional, para teste)
+        function limparRecordes() {
+            if (confirm('Tem certeza que deseja limpar todos os recordes?')) {
+                localStorage.removeItem('whacAMoleRecordes');
+                location.reload();
+            }
+        }
+        
+        // Carregar recordes ao carregar a página
+        window.addEventListener('load', carregarRecordes);
+        
+        // Atualizar recordes se voltou da página do jogo
+        window.addEventListener('focus', carregarRecordes);
+    </script>
 </body>
 </html>
