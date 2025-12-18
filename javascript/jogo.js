@@ -12,9 +12,9 @@ var recordes = []; // Array de recordes
 
 // Configurações de dificuldade
 const dificuldades = {
-    facil: { buracos: 6, intervalo: 3000, janela: 2000, colunas: 3 },
-    medio: { buracos: 8, intervalo: 2000, janela: 1500, colunas: 4 },
-    dificil: { buracos: 10, intervalo: 1500, janela: 1000, colunas: 5 }
+    facil: { buracos: 6, intervalo: 3000, janela: 2000, colunas: 3, pontosAcerto: 5, pontosPerdido: 2, pontosErro: 3 },
+    medio: { buracos: 8, intervalo: 2000, janela: 1500, colunas: 4, pontosAcerto: 10, pontosPerdido: 4, pontosErro: 6 },
+    dificil: { buracos: 10, intervalo: 1500, janela: 1000, colunas: 5, pontosAcerto: 20, pontosPerdido: 8, pontosErro: 12 }
 };
 
 // Funções de gerenciamento de recordes
@@ -55,7 +55,20 @@ function adicionarRecorde(nome, pontos, dificuldade) {
 }
 
 function calcularPontuacao() {
-    return Math.max(acertos - perdidos - errados, 0);
+    const config = dificuldades[dificuldadeAtual];
+    const pontos = (acertos * config.pontosAcerto) - (perdidos * config.pontosPerdido) - (errados * config.pontosErro);
+    return Math.max(pontos, 0);
+}
+
+function atualizarValoresPontuacao() {
+    const config = dificuldades[dificuldadeAtual];
+    const valorAcerto = document.getElementById('valorAcerto');
+    const valorPerdido = document.getElementById('valorPerdido');
+    const valorErrado = document.getElementById('valorErrado');
+    
+    if (valorAcerto) valorAcerto.textContent = `(+${config.pontosAcerto})`;
+    if (valorPerdido) valorPerdido.textContent = `(-${config.pontosPerdido})`;
+    if (valorErrado) valorErrado.textContent = `(-${config.pontosErro})`;
 }
 
 const ajustarLayout = () => {
@@ -138,6 +151,7 @@ window.addEventListener('load', () => {
     
     // Ajustar layout inicial
     ajustarLayout();
+    atualizarValoresPontuacao();
     
     // Redirecionar se não houver jogador registrado
     if (!nomeJogador) {
@@ -155,6 +169,7 @@ window.addEventListener('load', () => {
             intervalo = config.intervalo;
             janela = config.janela;
             ajustarLayout();
+            atualizarValoresPontuacao();
             // Atualizar sessionStorage
             sessionStorage.setItem('whacAMoleDificuldade', dificuldadeAtual);
         });
@@ -283,7 +298,7 @@ function mostraPontuacao() {
     };
     
     Object.entries(pontuacoes).forEach(([tipo, valor]) => mostraPontuacaoDe(tipo, valor));
-    mostraPontuacaoDe('saldo', Math.max(acertos - perdidos - errados, 0));
+    mostraPontuacaoDe('saldo', calcularPontuacao());
 }
 
 function mostraPontuacaoDe(display, valor) {

@@ -19,12 +19,7 @@
 </head>
 <body>
     <header>
-        <div class="previousPage">
-            <a href="index.html" class="circulo" title="Voltar ao Menu">
-                <img src="imagens/arrow-up.png" alt="Seta para cima" class="arrow">
-            </a>
-        </div>
-        
+                
     </header>
     <section class="tabuleiro" id="tabuleiro">
         <div class="gramado" id="idGramado">
@@ -48,15 +43,15 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Acertos:</td>
+                        <td>Acertos: <span id="valorAcerto" style="color: green; font-weight: bold;">(+5)</span></td>
                         <td class="pontuacao" id="acertos"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><td>
                     </tr>
                     <tr>
-                        <td>Perdidos:</td>
+                        <td>Perdidos: <span id="valorPerdido" style="color: orange; font-weight: bold;">(-2)</span></td>
                         <td class="pontuacao" id="perdidos"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"></td>
                     </tr>
                     <tr>
-                        <td>Errados:</td>
+                        <td>Errados: <span id="valorErrado" style="color: red; font-weight: bold;">(-3)</span></td>
                         <td class="pontuacao" id="errados"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"></td>
                     </tr>
                     <tr>
@@ -65,13 +60,8 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <label for="dificuldade" style="font-family: 'Bungee Spice', sans-serif; display: block; margin-bottom: 8px; font-size: 0.9rem;">Dificuldade:</label>
-                            <select id="dificuldade" class="form-select mb-2">
-                                <option value="facil" selected>Fácil</option>
-                                <option value="medio">Médio</option>
-                                <option value="dificil">Difícil</option>
-                            </select>
-                            <button id="start" class="btn btn-light">Start</button>
+                            <button id="start" class="btn btn-light mb-2">Start</button>
+                            <button onclick="window.location.href='index.html'" class="btn btn-secondary">Menu Principal</button>
                         </td>
                     </tr>
                 </tbody>
@@ -81,11 +71,7 @@
     </section>
     <footer>
         
-        <div class="nextPage">
-            <a href="recordes.html" class="circulo">
-                <img src="imagens/arrow-down.png" alt="seta para baixo" class="arrow">
-            </a>
-        </div>
+        
     </footer>    
 </body>
 <!-- Nosso script -->
