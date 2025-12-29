@@ -244,11 +244,15 @@ const WhacAMoleGame = (() => {
             if (!state.jogoAtivo || state.jogoFoiPausado) return;
             
             const buraco = Math.floor(Math.random() * state.numBuracosAtivos);
-            const elementoBuraco = document.getElementById('buraco' + buraco);
+            const buracoId = 'buraco' + buraco;
+            const elementoBuraco = document.getElementById(buracoId);
             
-            if (elementoBuraco && !elementoBuraco.src.includes('hole-mole')) {
-                elementoBuraco.src = 'imagens/hole-mole.png';
-                state.timers[buraco] = setTimeout(() => this.tiraToupeira(buraco), state.janela);
+            if (elementoBuraco) {
+                const img = elementoBuraco.querySelector('img');
+                if (img && !img.src.includes('hole-mole')) {
+                    atualizarStatusBuraco(buracoId, true);
+                    state.timers[buraco] = setTimeout(() => this.tiraToupeira(buraco), state.janela);
+                }
             }
             
             const proximoTimeout = setTimeout(() => this.sobeToupeira(), state.intervalo);
@@ -256,11 +260,15 @@ const WhacAMoleGame = (() => {
         },
 
         tiraToupeira(buraco) {
-            const elementoBuraco = document.getElementById('buraco' + buraco);
-            if (elementoBuraco && elementoBuraco.src.includes('hole-mole')) {
-                elementoBuraco.src = 'imagens/hole.png';
-                state.perdidos++;
-                mostraPontuacao();
+            const buracoId = 'buraco' + buraco;
+            const elementoBuraco = document.getElementById(buracoId);
+            if (elementoBuraco) {
+                const img = elementoBuraco.querySelector('img');
+                if (img && img.src.includes('hole-mole')) {
+                    atualizarStatusBuraco(buracoId, false);
+                    state.perdidos++;
+                    mostraPontuacao();
+                }
             }
             delete state.timers[buraco];
         }
@@ -281,19 +289,60 @@ const WhacAMoleGame = (() => {
     };
 
     /**
-     * Mostra a pontuação de um tipo específico
+     * Mostra a pontuação de um tipo específico e atualiza ARIA labels
      */
     const mostraPontuacaoDe = (display, valor) => {
-        const imgs = document.getElementById(display)?.children;
-        if (!imgs) return;
+        const container = document.getElementById(display);
+        if (!container) return;
         
+        const imgs = container.children;
         const digitos = [Math.floor(valor/100), Math.floor((valor/10)%10), valor%10];
+        
         digitos.forEach((d, i) => {
-            if (imgs[i]) {
+            if (imgs[i] && imgs[i].tagName === 'IMG') {
                 imgs[i].src = `imagens/caractere_${d}.gif`;
                 imgs[i].alt = d;
             }
         });
+        
+        // Atualizar aria-label para leitores de tela
+        const labelMap = {
+            'acertos': 'Acertos',
+            'perdidos': 'Perdidos',
+            'errados': 'Errados',
+            'saldo': 'Saldo total'
+        };
+        
+        if (labelMap[display]) {
+            container.setAttribute('aria-label', `${labelMap[display]}: ${valor}`);
+        }
+        
+        // Atualizar span visualmente oculto para leitores de tela
+        const scoreValue = container.querySelector('.score-value');
+        if (scoreValue) {
+            scoreValue.textContent = valor;
+        }
+    };
+
+    /**
+     * Atualiza o status visual e acessível de um buraco
+     */
+    const atualizarStatusBuraco = (buracoId, temToupeira) => {
+        const buraco = document.getElementById(buracoId);
+        if (!buraco) return;
+        
+        const img = buraco.querySelector('img');
+        const status = buraco.querySelector('.hole-status');
+        
+        if (temToupeira) {
+            if (img) img.src = 'imagens/hole-mole.png';
+            if (status) status.textContent = 'Toupeira apareceu!';
+            buraco.setAttribute('aria-label', buraco.getAttribute('aria-label').replace('Buraco', 'Toupeira no buraco'));
+        } else {
+            if (img) img.src = 'imagens/hole.png';
+            if (status) status.textContent = 'Buraco vazio';
+            buraco.setAttribute('aria-label', buraco.getAttribute('aria-label').replace('Toupeira no buraco', 'Buraco'));
+        }
     };
 
     /**
@@ -313,15 +362,20 @@ const WhacAMoleGame = (() => {
         martelada(evento) {
             if (!state.jogoAtivo) return;
             
-            const buraco = evento.target.id.replace('buraco', '');
+            // Suportar tanto click em img quanto no botão
+            const target = evento.target.closest('.hole-button') || evento.target;
+            const buracoId = target.id;
+            const buraco = buracoId.replace('buraco', '');
+            const img = target.querySelector ? target.querySelector('img') : target;
             
-            if (evento.target.src.includes('hole-mole')) {
+            if (img && img.src.includes('hole-mole')) {
                 state.acertos++;
-                evento.target.src = 'imagens/hole.png';
+                atualizarStatusBuraco(buracoId, false);
                 if (state.timers[buraco]) {
                     clearTimeout(state.timers[buraco]);
                     delete state.timers[buraco];
                 }
+                // Feedback sonoro/visual poderia ser adicionado aqui
             } else {
                 state.errados++;
             }
@@ -447,11 +501,21 @@ const WhacAMoleGame = (() => {
             gramado.addEventListener('mouseup', MarteloHandlers.marteloCima);
         }
         
-        // Configurar buracos
+        // Configurar buracos com suporte para teclado
         for (let i = 0; i < 10; i++) {
             const buraco = document.getElementById('buraco' + i);
             if (buraco) {
                 buraco.addEventListener('click', MarteloHandlers.martelada);
+                
+                // Suporte para teclado (Enter e Espaço)
+                buraco.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        MarteloHandlers.martelada(e);
+                    }
+                });
+                
+                // Suporte para dispositivos touch (iOS)
                 buraco.addEventListener('touchend', (e) => {
                     e.preventDefault();
                     MarteloHandlers.martelada(e);

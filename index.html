@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Whac-A-Mole - Jogo clássico de acertar toupeiras. Divirta-se e teste seus reflexos!">
     <link rel="stylesheet" href="css/estilo_responsivo.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,59 +18,72 @@
     <title>Whac-A-Mole - Menu Principal</title>
 </head>
 <body>
+    <a href="#menu-principal" class="skip-link">Pular para o menu principal</a>
     <!-- Modal de Registro do Jogador -->
-    <div class="modal-overlay" id="modalJogador" style="display: none;">
+    <div class="modal-overlay" id="modalJogador" style="display: none;" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
         <div class="modal-content">
-            <h2 style="font-family: 'Bungee Spice', sans-serif; text-align: center; margin-bottom: 20px;">Bem-vindo ao Whac-A-Mole!</h2>
+            <h2 id="modalTitle" style="font-family: 'Bungee Spice', sans-serif; text-align: center; margin-bottom: 20px;">Bem-vindo ao Whac-A-Mole!</h2>
             <form id="formJogador">
                 <div class="form-group">
                     <label for="nomeJogador">Digite seu nome:</label>
-                    <input type="text" id="nomeJogador" class="form-control" maxlength="20" required placeholder="Seu nome" pattern="[A-Za-zÀ-ÿ0-9\s]+" title="Apenas letras, números e espaços são permitidos">
-                    <small class="form-text text-muted">Máximo 20 caracteres. Apenas letras, números e espaços.</small>
+                    <input 
+                        type="text" 
+                        id="nomeJogador" 
+                        class="form-control" 
+                        maxlength="20" 
+                        required 
+                        placeholder="Seu nome" 
+                        pattern="[A-Za-zÀ-ÿ0-9\s]+" 
+                        title="Apenas letras, números e espaços são permitidos"
+                        aria-required="true"
+                        aria-describedby="nomeHelp">
+                    <small id="nomeHelp" class="form-text text-muted">Máximo 20 caracteres. Apenas letras, números e espaços.</small>
                 </div>
                 <div class="form-group">
                     <label for="dificuldadeModal">Escolha a dificuldade:</label>
-                    <select id="dificuldadeModal" class="form-select">
+                    <select id="dificuldadeModal" class="form-select" aria-label="Selecionar dificuldade do jogo">
                         <option value="facil" selected>Fácil</option>
                         <option value="medio">Médio</option>
                         <option value="dificil">Difícil</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Começar Jogo</button>
-                <button type="button" class="btn btn-secondary btn-block mt-2" id="btnCancelar">Cancelar</button>
+                <button type="submit" class="btn btn-primary btn-block" aria-label="Começar o jogo">Começar Jogo</button>
+                <button type="button" class="btn btn-secondary btn-block mt-2" id="btnCancelar" aria-label="Cancelar e voltar ao menu">Cancelar</button>
             </form>
         </div>
     </div>
 
-    <section class="menu-principal">
-        <div class="menu-container">
-            <div class="logo-container">
-                <img src="imagens/Whac-A-Mole.jpg" alt="Whac-A-Mole Logo" class="logo-image">
-                <h1 class="game-title">Whac-A-Mole</h1>
-            </div>
-            
-            <div class="menu-buttons">
-                <button class="menu-btn btn-jogar" id="btnJogar">
-                    <span class="btn-icon">▶</span>
-                    <span class="btn-text">Jogar</span>
-                </button>
+    <main role="main">
+        <section class="menu-principal" id="menu-principal">
+            <div class="menu-container">
+                <div class="logo-container">
+                    <img src="imagens/Whac-A-Mole.jpg" alt="Logo do jogo Whac-A-Mole com toupeira" class="logo-image">
+                    <h1 class="game-title">Whac-A-Mole</h1>
+                </div>
                 
-                <a href="regras.html" class="menu-btn btn-regras">
-                    <span class="btn-icon">📖</span>
-                    <span class="btn-text">Regras</span>
-                </a>
+                <nav class="menu-buttons" role="navigation" aria-label="Menu principal do jogo">
+                    <button class="menu-btn btn-jogar" id="btnJogar" aria-label="Iniciar novo jogo" type="button">
+                        <span class="btn-icon" aria-hidden="true">▶</span>
+                        <span class="btn-text">Jogar</span>
+                    </button>
+                    
+                    <a href="regras.html" class="menu-btn btn-regras" aria-label="Ver regras do jogo">
+                        <span class="btn-icon" aria-hidden="true">📖</span>
+                        <span class="btn-text">Regras</span>
+                    </a>
+                    
+                    <a href="recordes.html" class="menu-btn btn-recordes" aria-label="Ver tabela de recordes">
+                        <span class="btn-icon" aria-hidden="true">🏆</span>
+                        <span class="btn-text">Recordes</span>
+                    </a>
+                </nav>
                 
-                <a href="recordes.html" class="menu-btn btn-recordes">
-                    <span class="btn-icon">🏆</span>
-                    <span class="btn-text">Recordes</span>
-                </a>
+                <footer class="footer-info" role="contentinfo">
+                    <p>Desenvolvido por Silas Melo | 2025</p>
+                </footer>
             </div>
-            
-            <div class="footer-info">
-                <p>Desenvolvido por Silas Melo | 2025</p>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
     
     <script>
         // Gerenciamento do modal e navegação

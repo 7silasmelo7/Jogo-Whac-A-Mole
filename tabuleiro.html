@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tabuleiro do jogo Whac-A-Mole - Acerte as toupeiras e marque pontos">
     <link rel="stylesheet" href="css/estilo_responsivo.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,63 +16,122 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
         crossorigin="anonymous">
     
-    <title>Tabuleiro do Jogo</title>
+    <title>Tabuleiro do Jogo - Whac-A-Mole</title>
 </head>
 <body>
-    <header>
-                
+    <a href="#tabuleiro" class="skip-link">Pular para o jogo</a>
+    <header role="banner">
+        <h1 class="visually-hidden">Jogo Whac-A-Mole - Tabuleiro</h1>
     </header>
-    <section class="tabuleiro" id="tabuleiro">
-        <div class="gramado" id="idGramado">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco0">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco1">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco2">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco3">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco4">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco5">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco6">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco7">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco8">
-            <img src="imagens/hole.png" alt="buraco vazio" class="hole" id="buraco9">
-        </div>
-        <div class="pontos">
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="2">Pontuação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Acertos: <span id="valorAcerto" style="color: green; font-weight: bold;">(+5)</span></td>
-                        <td class="pontuacao" id="acertos"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><td>
-                    </tr>
-                    <tr>
-                        <td>Perdidos: <span id="valorPerdido" style="color: orange; font-weight: bold;">(-2)</span></td>
-                        <td class="pontuacao" id="perdidos"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"></td>
-                    </tr>
-                    <tr>
-                        <td>Errados: <span id="valorErrado" style="color: red; font-weight: bold;">(-3)</span></td>
-                        <td class="pontuacao" id="errados"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"></td>
-                    </tr>
-                    <tr>
-                        <td>Saldo:</td>
-                        <td class="pontuacao" id="saldo"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"><img src="imagens/caractere_0.gif" alt="0"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <button id="start" class="btn btn-light mb-2">Start</button>
-                            <button onclick="window.location.href='index.html'" class="btn btn-secondary">Menu Principal</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="tempo" id="tempo">Tempo: 60s</div>        
+    <main role="main">
+        <section class="tabuleiro" id="tabuleiro" aria-label="Área de jogo">
+            <div class="gramado" id="idGramado" role="grid" aria-label="Grade de buracos com toupeiras">
+                <button class="hole-button" id="buraco0" aria-label="Buraco 1" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco1" aria-label="Buraco 2" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco2" aria-label="Buraco 3" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco3" aria-label="Buraco 4" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco4" aria-label="Buraco 5" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco5" aria-label="Buraco 6" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco6" aria-label="Buraco 7" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco7" aria-label="Buraco 8" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco8" aria-label="Buraco 9" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+                <button class="hole-button" id="buraco9" aria-label="Buraco 10" role="gridcell" tabindex="0">
+                    <img src="imagens/hole.png" alt="" class="hole" aria-hidden="true">
+                    <span class="visually-hidden hole-status">Buraco vazio</span>
+                </button>
+            </div>
+            <aside class="pontos" role="complementary" aria-label="Painel de pontuação">
+                <label for="dificuldade" class="visually-hidden">Selecione a dificuldade</label>
+                <select id="dificuldade" class="form-select mb-3" aria-label="Seletor de dificuldade">
+                    <option value="facil">Fácil</option>
+                    <option value="medio">Médio</option>
+                    <option value="dificil">Difícil</option>
+                </select>
+                <table role="table" aria-label="Tabela de pontuação">
+                    <caption class="visually-hidden">Pontuação do jogo</caption>
+                    <thead>
+                        <tr>
+                            <th colspan="2" scope="col">Pontuação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Acertos: <span id="valorAcerto" class="score-points score-positive" aria-label="Mais 5 pontos">(+5)</span></th>
+                            <td class="pontuacao" id="acertos" aria-label="Acertos: 0" role="status" aria-live="polite">
+                                <img src="imagens/caractere_0.gif" alt="centena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="dezena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="unidade: 0" aria-hidden="true">
+                                <span class="visually-hidden score-value">0</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Perdidos: <span id="valorPerdido" class="score-points score-warning" aria-label="Menos 2 pontos">(-2)</span></th>
+                            <td class="pontuacao" id="perdidos" aria-label="Perdidos: 0" role="status" aria-live="polite">
+                                <img src="imagens/caractere_0.gif" alt="centena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="dezena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="unidade: 0" aria-hidden="true">
+                                <span class="visually-hidden score-value">0</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Errados: <span id="valorErrado" class="score-points score-negative" aria-label="Menos 3 pontos">(-3)</span></th>
+                            <td class="pontuacao" id="errados" aria-label="Errados: 0" role="status" aria-live="polite">
+                                <img src="imagens/caractere_0.gif" alt="centena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="dezena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="unidade: 0" aria-hidden="true">
+                                <span class="visually-hidden score-value">0</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Saldo:</th>
+                            <td class="pontuacao" id="saldo" aria-label="Saldo total: 0" role="status" aria-live="polite">
+                                <img src="imagens/caractere_0.gif" alt="centena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="dezena: 0" aria-hidden="true">
+                                <img src="imagens/caractere_0.gif" alt="unidade: 0" aria-hidden="true">
+                                <span class="visually-hidden score-value">0</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <button id="start" class="btn btn-light mb-2" aria-label="Iniciar jogo" type="button">Iniciar</button>
+                                <button onclick="window.location.href='index.html'" class="btn btn-secondary" aria-label="Voltar ao menu principal" type="button">Menu Principal</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </aside>
+            <div class="tempo" id="tempo" role="timer" aria-live="assertive" aria-atomic="true">Tempo: 60s</div>        
     </section>
-    <footer>
-        
-        
+    </main>
+    <footer role="contentinfo">
+        <p class="visually-hidden">Fim da área de jogo</p>
     </footer>    
 </body>
 <!-- Nosso script -->

@@ -4,15 +4,19 @@
 }
 
 :root {
-    /* Cores */
+    /* Cores - Atualizadas para melhor contraste (WCAG AA) */
     --primary-color: #000000;
-    --primary-hover: #000000;
-    --grass-dark: #008000;
-    --grass-light: #00FF00;
+    --primary-hover: #333333;
+    --grass-dark: #006400;
+    --grass-light: #00CC00;
     --gray-light: #f0f0f0;
-    --gray-medium: #C0C0C0;
+    --gray-medium: #808080;
     --gray-dark: #000000;
     --white: #FFFFFF;
+    --focus-color: #0066CC;
+    --error-color: #CC0000;
+    --warning-color: #CC6600;
+    --success-color: #006600;
     
     /* Tamanhos fluidos com clamp */
     --font-size-sm: clamp(0.875rem, 2vw, 1rem);
@@ -22,6 +26,110 @@
     --padding-sm: clamp(10px, 2vw, 20px);
     --padding-md: clamp(20px, 3vw, 40px);
     --padding-lg: clamp(30px, 5vw, 80px);
+}
+
+/* ===== ACESSIBILIDADE ===== */
+
+/* Classe para elementos visualmente ocultos mas acessíveis a leitores de tela */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Skip link para navegação por teclado */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 8px 16px;
+    text-decoration: none;
+    z-index: 10000;
+    font-weight: bold;
+    border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+/* Estilos de foco visíveis e acessíveis */
+*:focus {
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+button:focus,
+a:focus,
+input:focus,
+select:focus {
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+/* Melhorar contraste de cores para pontuação */
+.score-positive {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+.score-warning {
+    color: var(--warning-color);
+    font-weight: bold;
+}
+
+.score-negative {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+/* Estilizar botões de buracos para acessibilidade */
+.hole-button {
+    background: transparent;
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.1s, border-color 0.2s;
+    border-radius: 8px;
+}
+
+.hole-button:hover {
+    transform: scale(1.05);
+    border-color: rgba(0, 102, 204, 0.3);
+}
+
+.hole-button:focus {
+    border-color: var(--focus-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+}
+
+.hole-button:active {
+    transform: scale(0.95);
+}
+
+.hole-button img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+/* Indicador de alto contraste para botões do menu */
+.menu-btn:focus {
+    box-shadow: 0 0 0 4px var(--focus-color), 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
 }
 
 html {
@@ -349,12 +457,30 @@ body {
     position: relative;
 }
 
+.pontos caption {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
 .pontos th {
     font-size: var(--font-size-xl);
     font-family: 'Bungee Spice', sans-serif;
     text-align: center;
     padding-bottom: var(--padding-sm);
     border-bottom: 2px solid var(--gray-dark);
+}
+
+.pontos th[scope="row"] {
+    text-align: right;
+    font-size: var(--font-size-base);
+    font-family: 'Bungee Spice', sans-serif;
+    padding: var(--padding-sm);
+    font-weight: normal;
 }
 
 .pontos td:first-child {
@@ -369,7 +495,33 @@ body {
     border-bottom: 1px solid #ddd;
 }
 
-#start {
+/* Estilos de pontuação com melhor contraste */
+.pontuacao {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    min-height: 30px;
+}
+
+.score-points {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* Usar cores com contraste adequado (WCAG AA) */
+.score-positive {
+    color: var(--success-color);
+}
+
+.score-warning {
+    color: var(--warning-color);
+}
+
+.score-negative {
+    color: var(--error-color);
+}
+
+#start, .btn-secondary {
     width: 100%;
     font-size: var(--font-size-base);
     padding: clamp(12px, 3vw, 18px);
@@ -378,7 +530,7 @@ body {
     color: var(--white);
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
     margin-top: var(--padding-sm);
     font-weight: bold;
     position: relative;
@@ -387,9 +539,12 @@ body {
     touch-action: manipulation;
 }
 
-#start:hover, #start:focus {
+#start:hover, #start:focus,
+.btn-secondary:hover, .btn-secondary:focus {
     background-color: var(--primary-hover);
     transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.5);
+}
 }
 
 #start:active {
