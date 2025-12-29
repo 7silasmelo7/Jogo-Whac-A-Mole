@@ -9,6 +9,37 @@ var numBuracosAtivos = 6; // Número de buracos baseado na dificuldade
 var dificuldadeAtual = 'facil';
 var nomeJogador = ''; // Nome do jogador atual
 var recordes = []; // Array de recordes
+var jogoFoiPausado = false; // Flag para controlar pausa
+
+// Função para limpar todos os timers e prevenir memory leaks
+function limparTodosTimers() {
+    // Limpar temporizador principal
+    if (idTemporizador) {
+        clearInterval(idTemporizador);
+        idTemporizador = null;
+    }
+    
+    // Limpar timers dos buracos
+    if (timers && typeof timers === 'object') {
+        Object.values(timers).forEach(timer => {
+            if (timer) clearTimeout(timer);
+        });
+        timers = {};
+    }
+    
+    // Limpar timeouts de subida de toupeiras
+    if (timeoutsSobeToupeira && Array.isArray(timeoutsSobeToupeira)) {
+        timeoutsSobeToupeira.forEach(timeout => {
+            if (timeout) clearTimeout(timeout);
+        });
+        timeoutsSobeToupeira = [];
+    }
+    
+    // Desativar jogo
+    jogoAtivo = false;
+    
+    console.log('Todos os timers foram limpos');
+}
 
 // Configurações de dificuldade
 const dificuldades = {
@@ -224,8 +255,70 @@ window.addEventListener('load', () => {
     
     for (let i = 0; i < 10; i++) {
         const buraco = document.getElementById('buraco' + i);
-        if (buraco) buraco.addEventListener('click', martelada);
+        if (buraco) {
+            buraco.addEventListener('click', martelada);
+            // Suporte para dispositivos touch (iOS)
+            buraco.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                martelada(e);
+            });
+        }
     }
+    
+    // Listener para prevenir memory leaks ao fechar/recarregar página
+    window.addEventListener('beforeunload', (e) => {
+        if (jogoAtivo) {
+            limparTodosTimers();
+            console.log('Timers limpos antes de sair da página');
+        }
+    });
+    
+    // Listener para pausar jogo quando aba perde foco (previne timers rodando em background)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && jogoAtivo && !jogoFoiPausado) {
+            // Aba ficou oculta - pausar jogo temporariamente
+            jogoFoiPausado = true;
+            limparTodosTimers();
+            console.log('Jogo pausado - aba oculta');
+        } else if (!document.hidden && jogoFoiPausado && tempoRestante > 0) {
+            // Aba voltou a ficar visível - retomar jogo
+            jogoFoiPausado = false;
+            jogoAtivo = true;
+            iniciaTemporizador();
+            sobeToupeira();
+            console.log('Jogo retomado - aba visível');
+        }
+    });
+    
+    // Listener para pausar em blur (mobile)
+    window.addEventListener('blur', () => {
+        if (jogoAtivo && !jogoFoiPausado) {
+            jogoFoiPausado = true;
+            limparTodosTimers();
+            console.log('Jogo pausado - janela perdeu foco');
+        }
+    });
+    
+    // Listener para retomar em focus (mobile)
+    window.addEventListener('focus', () => {
+        if (jogoFoiPausado && tempoRestante > 0) {
+            jogoFoiPausado = false;
+            jogoAtivo = true;
+            iniciaTemporizador();
+            sobeToupeira();
+            console.log('Jogo retomado - janela ganhou foco');
+        }
+    });
+    
+    // Listener para unload (backup - alguns navegadores)
+    window.addEventListener('unload', () => {
+        limparTodosTimers();
+    });
+    
+    // Listener para pagehide (iOS Safari)
+    window.addEventListener('pagehide', () => {
+        limparTodosTimers();
+    });
 });
 
 function start() {
@@ -243,6 +336,7 @@ function start() {
     if (seletorDificuldade) seletorDificuldade.disabled = true;
     
     jogoAtivo = true;
+    jogoFoiPausado = false;
     tempoRestante = tempoTotal;
     iniciaTemporizador();
     sobeToupeira();
@@ -264,14 +358,8 @@ function iniciaTemporizador() {
 }
 /** Finaliza o jogo quando o tempo acaba */
 function finalizaJogo() {
-    clearInterval(idTemporizador);
-    jogoAtivo = false;
-    
-    // Limpar todos os timeouts pendentes
-    Object.values(timers).forEach(timer => clearTimeout(timer));
-    timers = {};
-    timeoutsSobeToupeira.forEach(timeout => clearTimeout(timeout));
-    timeoutsSobeToupeira = [];
+    // Usar função centralizada para limpar timers
+    limparTodosTimers();
     
     document.querySelectorAll('img[id^="buraco"]').forEach(t => t.src = 'imagens/hole.png');
     
@@ -298,7 +386,7 @@ function finalizaJogo() {
 }
 
 function sobeToupeira() {
-    if (!jogoAtivo) return;
+    if (!jogoAtivo || jogoFoiPausado) return;
     const buraco = Math.floor(Math.random() * numBuracosAtivos);
     const elementoBuraco = document.getElementById('buraco' + buraco);
     
