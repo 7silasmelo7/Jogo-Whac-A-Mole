@@ -30,6 +30,40 @@
 
 /* ===== ACESSIBILIDADE ===== */
 
+/* Botão de mute para controle de áudio */
+#muteBtn {
+    min-width: 50px;
+    padding: 0.375rem 0.75rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: all 0.3s ease;
+    border: 2px solid #0dcaf0;
+}
+
+#muteBtn:hover {
+    background-color: #0dcaf0;
+    transform: scale(1.1);
+}
+
+#muteBtn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.5);
+}
+
+#muteBtn[aria-pressed="false"] {
+    opacity: 0.6;
+    border-color: #6c757d;
+}
+
+#muteBtn[aria-pressed="false"]:hover {
+    background-color: #6c757d;
+    opacity: 0.8;
+}
+
+.mute-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 /* Classe para elementos visualmente ocultos mas acessíveis a leitores de tela */
 .visually-hidden {
     position: absolute;

@@ -25,6 +25,134 @@ const WhacAMoleGame = (() => {
         };
     };
 
+    /**
+     * Gerenciador de áudio do jogo
+     * Controla todos os efeitos sonoros e configuração de mute
+     */
+    const AudioManager = {
+        sons: {
+            acerto: null,
+            erro: null,
+            inicio: null,
+            fim: null
+        },
+        mutado: false,
+
+        inicializar() {
+            // Carregar preferência de mute do localStorage
+            const muteSalvo = localStorage.getItem('whacAMoleMute');
+            this.mutado = muteSalvo === 'true';
+            
+            // Criar objetos de áudio usando Web Audio API como fallback
+            // Usamos sons gerados sinteticamente para não depender de arquivos externos
+            this.sons.acerto = this.criarSomSintetizado('acerto');
+            this.sons.erro = this.criarSomSintetizado('erro');
+            this.sons.inicio = this.criarSomSintetizado('inicio');
+            this.sons.fim = this.criarSomSintetizado('fim');
+            
+            this.atualizarIconeMute();
+        },
+
+        /**
+         * Cria sons sintetizados usando Web Audio API
+         * @param {string} tipo - Tipo do som (acerto, erro, inicio, fim)
+         * @returns {Function} Função para tocar o som
+         */
+        criarSomSintetizado(tipo) {
+            return () => {
+                if (this.mutado) return;
+                
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // Configurar som baseado no tipo
+                    switch(tipo) {
+                        case 'acerto':
+                            // Som alegre de acerto (arpejo ascendente)
+                            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.3);
+                            break;
+                            
+                        case 'erro':
+                            // Som de erro (nota baixa curta)
+                            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                            oscillator.type = 'sawtooth';
+                            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.2);
+                            break;
+                            
+                        case 'inicio':
+                            // Som de início (fanfarra curta)
+                            oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+                            oscillator.frequency.setValueAtTime(554.37, audioContext.currentTime + 0.15); // C#5
+                            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.3); // E5
+                            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.45);
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.45);
+                            break;
+                            
+                        case 'fim':
+                            // Som de fim (arpejo descendente)
+                            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime); // E5
+                            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.2); // C5
+                            oscillator.frequency.setValueAtTime(392, audioContext.currentTime + 0.4); // G4
+                            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.6);
+                            break;
+                    }
+                } catch (error) {
+                    console.warn('Áudio não suportado:', error);
+                }
+            };
+        },
+
+        tocar(tipo) {
+            if (this.sons[tipo] && !this.mutado) {
+                this.sons[tipo]();
+            }
+        },
+
+        toggleMute() {
+            this.mutado = !this.mutado;
+            localStorage.setItem('whacAMoleMute', this.mutado);
+            this.atualizarIconeMute();
+            
+            // Feedback visual
+            const botao = document.getElementById('muteBtn');
+            if (botao) {
+                const texto = this.mutado ? 'Som ativado' : 'Som desativado';
+                botao.setAttribute('aria-label', `${this.mutado ? 'Ativar' : 'Desativar'} som`);
+            }
+        },
+
+        atualizarIconeMute() {
+            const botao = document.getElementById('muteBtn');
+            if (!botao) return;
+            
+            const icone = botao.querySelector('.mute-icon');
+            if (icone) {
+                icone.textContent = this.mutado ? '🔇' : '🔊';
+            }
+            botao.setAttribute('aria-pressed', this.mutado ? 'false' : 'true');
+            botao.setAttribute('aria-label', `${this.mutado ? 'Ativar' : 'Desativar'} som`);
+        }
+    };
+
     // Estado privado do jogo
     const state = {
         acertos: 0,
@@ -42,7 +170,8 @@ const WhacAMoleGame = (() => {
         dificuldadeAtual: 'facil',
         nomeJogador: '',
         recordes: [],
-        jogoFoiPausado: false
+        jogoFoiPausado: false,
+        audioInicializado: false
     };
 
     /**
@@ -230,6 +359,7 @@ const WhacAMoleGame = (() => {
      */
     const finalizaJogo = () => {
         limparTodosTimers();
+        AudioManager.tocar('fim');
         
         document.querySelectorAll('img[id^="buraco"]').forEach(t => t.src = 'imagens/hole.png');
         
@@ -385,14 +515,15 @@ const WhacAMoleGame = (() => {
             
             if (img && img.src.includes('hole-mole')) {
                 state.acertos++;
+                AudioManager.tocar('acerto');
                 atualizarStatusBuraco(buracoId, false);
                 if (state.timers[buraco]) {
                     clearTimeout(state.timers[buraco]);
                     delete state.timers[buraco];
                 }
-                // Feedback sonoro/visual poderia ser adicionado aqui
             } else {
                 state.errados++;
+                AudioManager.tocar('erro');
             }
             mostraPontuacao();
         }
@@ -415,6 +546,7 @@ const WhacAMoleGame = (() => {
         botao.disabled = true;
         if (seletorDificuldade) seletorDificuldade.disabled = true;
         
+        AudioManager.tocar('inicio');
         state.jogoAtivo = true;
         state.jogoFoiPausado = false;
         state.tempoRestante = state.tempoTotal;
@@ -463,6 +595,12 @@ const WhacAMoleGame = (() => {
      * Inicialização do jogo
      */
     const inicializar = () => {
+        // Inicializar sistema de áudio
+        if (!state.audioInicializado) {
+            AudioManager.inicializar();
+            state.audioInicializado = true;
+        }
+        
         RecordesManager.carregar();
         
         // Carregar dados do jogador
@@ -555,6 +693,12 @@ const WhacAMoleGame = (() => {
         window.addEventListener('focus', EventHandlers.retomarJogo);
         window.addEventListener('unload', limparTodosTimers);
         window.addEventListener('pagehide', limparTodosTimers);
+        
+        // Botão de mute
+        const muteBtn = document.getElementById('muteBtn');
+        if (muteBtn) {
+            muteBtn.addEventListener('click', () => AudioManager.toggleMute());
+        }
     };
 
     // Event listeners de layout com debounce para otimização de performance
