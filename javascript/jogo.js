@@ -17,6 +17,33 @@ const dificuldades = {
     dificil: { buracos: 10, intervalo: 1500, janela: 1000, colunas: 5, pontosAcerto: 20, pontosPerdido: 8, pontosErro: 12 }
 };
 
+// Função para sanitizar nomes (segurança)
+function sanitizarNome(nome) {
+    if (!nome || typeof nome !== 'string') {
+        return 'Jogador';
+    }
+    
+    // Remove espaços extras no início e fim
+    nome = nome.trim();
+    
+    // Remove múltiplos espaços consecutivos
+    nome = nome.replace(/\s+/g, ' ');
+    
+    // Remove caracteres especiais perigosos, mantém apenas letras, números e espaços
+    // Permite acentuação portuguesa
+    nome = nome.replace(/[^A-Za-zÀ-ÿ0-9\s]/g, '');
+    
+    // Limita a 20 caracteres
+    nome = nome.substring(0, 20);
+    
+    // Se o nome ficou vazio após sanitização, usar nome padrão
+    if (!nome || nome.trim().length === 0) {
+        return 'Jogador';
+    }
+    
+    return nome;
+}
+
 // Funções de gerenciamento de recordes
 function carregarRecordes() {
     const recordesSalvos = localStorage.getItem('whacAMoleRecordes');
@@ -38,6 +65,9 @@ function salvarRecordes() {
 }
 
 function adicionarRecorde(nome, pontos, dificuldade) {
+    // Sanitizar nome antes de salvar
+    nome = sanitizarNome(nome);
+    
     const agora = new Date();
     const dataFormatada = `${String(agora.getDate()).padStart(2, '0')}/${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()}`;
     
@@ -129,7 +159,8 @@ window.addEventListener('load', () => {
     const dificuldadeSalva = sessionStorage.getItem('whacAMoleDificuldade');
     
     if (jogadorSalvo) {
-        nomeJogador = jogadorSalvo;
+        // Sanitizar nome por segurança
+        nomeJogador = sanitizarNome(jogadorSalvo);
     }
     
     if (dificuldadeSalva) {
