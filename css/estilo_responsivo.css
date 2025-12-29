@@ -34,6 +34,11 @@ body {
     overflow-x: hidden;
     font-family: 'Arial', sans-serif;
     background-color: var(--gray-light);
+    /* Otimizações para iOS */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 /* ===== NAVEGAÇÃO GLOBAL ===== */
@@ -273,6 +278,15 @@ body {
     background-color: var(--grass-light);
     padding: var(--padding-md);
     flex-wrap: wrap;
+    /* Safe area para iOS (notch e home indicator) */
+    padding-top: max(var(--padding-md), env(safe-area-inset-top));
+    padding-bottom: max(var(--padding-md), env(safe-area-inset-bottom));
+    padding-left: max(var(--padding-md), env(safe-area-inset-left));
+    padding-right: max(var(--padding-md), env(safe-area-inset-right));
+    /* Prevenir scroll bounce no iOS sem afetar elementos fixed */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
 }
 
 .gramado {
@@ -526,10 +540,21 @@ body {
     padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 20px);
     border: 2px solid var(--gray-dark);
     border-radius: 8px;
-    z-index: 1000;
+    z-index: 10000;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-family: 'Bungee Spice', sans-serif;
     font-weight: bold;
+    /* Otimizações específicas para iOS */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: contents;
+    pointer-events: none;
+    /* Garantir visibilidade */
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
 }
 
 /* ===== MODAL DE REGISTRO DO JOGADOR ===== */
@@ -921,6 +946,50 @@ body {
     .records-container {
         background-color: #2a2a2a;
         color: #fff;
+    }
+}
+
+/* iOS: suporte para dispositivos com notch (iPhone X+) */
+@supports (padding: max(0px)) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .tempo {
+        top: max(20px, calc(env(safe-area-inset-top) + 10px));
+        right: max(20px, calc(env(safe-area-inset-right) + 10px));
+        /* Forçar hardware acceleration no iOS */
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* iOS Safari: corrigir problemas de scroll e visibilidade do timer */
+@supports (-webkit-touch-callout: none) {
+    .tabuleiro {
+        height: -webkit-fill-available;
+        min-height: -webkit-fill-available;
+    }
+    
+    /* Garantir que o timer fique sempre visível no iOS */
+    .tempo {
+        position: fixed !important;
+        z-index: 99999 !important;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        isolation: isolate;
+    }
+    
+    /* Prevenir que outros elementos cubram o timer */
+    .gramado {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .pontos {
+        position: relative;
+        z-index: 1;
     }
 }
 
