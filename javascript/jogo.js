@@ -10,6 +10,21 @@ const WhacAMoleGame = (() => {
         dificil: { buracos: 10, intervalo: 1500, janela: 1000, colunas: 5, pontosAcerto: 20, pontosPerdido: 8, pontosErro: 12 }
     };
 
+    /**
+     * Função utilitária de debounce para otimizar performance
+     * Atrasa a execução de uma função até que um período de inatividade tenha passado
+     * @param {Function} func - Função a ser executada
+     * @param {number} delay - Tempo de espera em milissegundos
+     * @returns {Function} Função com debounce aplicado
+     */
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    };
+
     // Estado privado do jogo
     const state = {
         acertos: 0,
@@ -542,13 +557,16 @@ const WhacAMoleGame = (() => {
         window.addEventListener('pagehide', limparTodosTimers);
     };
 
-    // Event listeners de layout
+    // Event listeners de layout com debounce para otimização de performance
+    // O debounce de 250ms reduz cálculos desnecessários durante redimensionamento
+    const ajustarLayoutComDebounce = debounce(LayoutManager.ajustar, 250);
+    
     window.addEventListener('load', () => {
         LayoutManager.ajustar();
         inicializar();
     });
-    window.addEventListener('resize', LayoutManager.ajustar);
-    window.addEventListener('orientationchange', LayoutManager.ajustar);
+    window.addEventListener('resize', ajustarLayoutComDebounce);
+    window.addEventListener('orientationchange', ajustarLayoutComDebounce);
 
     // API pública do módulo (caso precise acessar externamente)
     return {
