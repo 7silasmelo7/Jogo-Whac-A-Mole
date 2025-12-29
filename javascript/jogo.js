@@ -153,6 +153,217 @@ const WhacAMoleGame = (() => {
         }
     };
 
+    /**
+     * Gerenciador de notificações Toast
+     * Sistema moderno de notificações para substituir alert()
+     */
+    const NotificationManager = {
+        container: null,
+        activeToasts: [],
+
+        inicializar() {
+            // Criar container de notificações se não existir
+            if (!this.container) {
+                this.container = document.createElement('div');
+                this.container.id = 'toast-container';
+                this.container.className = 'toast-container';
+                this.container.setAttribute('aria-live', 'polite');
+                this.container.setAttribute('aria-atomic', 'true');
+                document.body.appendChild(this.container);
+            }
+        },
+
+        /**
+         * Mostra uma notificação toast
+         * @param {string} message - Mensagem a exibir
+         * @param {string} type - Tipo: 'success', 'error', 'warning', 'info'
+         * @param {number} duration - Duração em ms (0 = requer clique manual)
+         */
+        mostrar(message, type = 'info', duration = 5000) {
+            this.inicializar();
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+
+            // Ícone baseado no tipo
+            const icones = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: '📢'
+            };
+
+            const icone = icones[type] || icones.info;
+
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <span class="toast-icon" aria-hidden="true">${icone}</span>
+                    <div class="toast-message">${message}</div>
+                    <button class="toast-close" aria-label="Fechar notificação" type="button">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            `;
+
+            // Botão de fechar
+            const closeBtn = toast.querySelector('.toast-close');
+            closeBtn.addEventListener('click', () => this.fechar(toast));
+
+            // Adicionar ao container
+            this.container.appendChild(toast);
+            this.activeToasts.push(toast);
+
+            // Animação de entrada
+            setTimeout(() => toast.classList.add('toast-show'), 10);
+
+            // Auto-fechar se duration > 0
+            if (duration > 0) {
+                setTimeout(() => this.fechar(toast), duration);
+            }
+
+            return toast;
+        },
+
+        /**
+         * Fecha uma notificação
+         */
+        fechar(toast) {
+            if (!toast || !toast.parentElement) return;
+
+            toast.classList.remove('toast-show');
+            toast.classList.add('toast-hide');
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.parentElement.removeChild(toast);
+                }
+                const index = this.activeToasts.indexOf(toast);
+                if (index > -1) {
+                    this.activeToasts.splice(index, 1);
+                }
+            }, 300);
+        },
+
+        /**
+         * Mostra modal de fim de jogo com estatísticas detalhadas
+         */
+        mostrarFimDeJogo(nomeJogador, dificuldade, acertos, perdidos, errados, pontuacao) {
+            this.inicializar();
+
+            // Criar overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'game-over-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.setAttribute('aria-labelledby', 'game-over-title');
+
+            overlay.innerHTML = `
+                <div class="game-over-modal">
+                    <div class="game-over-header">
+                        <h2 id="game-over-title">🎮 Fim de Jogo!</h2>
+                        <button class="modal-close" aria-label="Fechar" type="button">×</button>
+                    </div>
+                    <div class="game-over-body">
+                        <p class="player-name">👋 ${nomeJogador}</p>
+                        <p class="difficulty">🎯 Dificuldade: <strong>${dificuldade.toUpperCase()}</strong></p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item stat-success">
+                                <span class="stat-icon">✅</span>
+                                <span class="stat-label">Acertos</span>
+                                <span class="stat-value">${acertos}</span>
+                            </div>
+                            <div class="stat-item stat-warning">
+                                <span class="stat-icon">⏱️</span>
+                                <span class="stat-label">Perdidos</span>
+                                <span class="stat-value">${perdidos}</span>
+                            </div>
+                            <div class="stat-item stat-error">
+                                <span class="stat-icon">❌</span>
+                                <span class="stat-label">Errados</span>
+                                <span class="stat-value">${errados}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="final-score">
+                            <span class="score-label">🏆 PONTUAÇÃO FINAL</span>
+                            <span class="score-value">${pontuacao}</span>
+                        </div>
+                        
+                        <p class="record-saved">✨ Seu recorde foi salvo!</p>
+                        
+                        <button class="btn btn-primary btn-play-again" type="button">
+                            🔄 Jogar Novamente
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            // Event listeners
+            const closeBtn = overlay.querySelector('.modal-close');
+            const playAgainBtn = overlay.querySelector('.btn-play-again');
+
+            const fecharModal = () => {
+                overlay.classList.add('fade-out');
+                setTimeout(() => {
+                    if (overlay.parentElement) {
+                        overlay.parentElement.removeChild(overlay);
+                    }
+                }, 300);
+            };
+
+            closeBtn.addEventListener('click', fecharModal);
+            playAgainBtn.addEventListener('click', () => {
+                fecharModal();
+                // O botão Iniciar já estará habilitado
+            });
+
+            // Fechar ao clicar fora do modal
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    fecharModal();
+                }
+            });
+
+            // Suporte para ESC
+            const escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    fecharModal();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+
+            // Animação de entrada
+            setTimeout(() => overlay.classList.add('show'), 10);
+
+            // Focar no botão de fechar para acessibilidade
+            setTimeout(() => closeBtn.focus(), 100);
+        },
+
+        // Métodos de atalho
+        success(message, duration = 4000) {
+            return this.mostrar(message, 'success', duration);
+        },
+
+        error(message, duration = 6000) {
+            return this.mostrar(message, 'error', duration);
+        },
+
+        warning(message, duration = 5000) {
+            return this.mostrar(message, 'warning', duration);
+        },
+
+        info(message, duration = 4000) {
+            return this.mostrar(message, 'info', duration);
+        }
+    };
+
     // Estado privado do jogo
     const state = {
         acertos: 0,
@@ -366,7 +577,15 @@ const WhacAMoleGame = (() => {
         const pontuacaoFinal = calcularPontuacao();
         RecordesManager.adicionar(state.nomeJogador, pontuacaoFinal, state.dificuldadeAtual);
         
-        alert(`Fim de jogo, ${state.nomeJogador}!\n\nDificuldade: ${state.dificuldadeAtual.toUpperCase()}\n\nAcertos: ${state.acertos}\nPerdidos: ${state.perdidos}\nErrados: ${state.errados}\n\nPONTUAÇÃO FINAL: ${pontuacaoFinal}\n\nSeu recorde foi salvo!`);
+        // Mostrar modal de fim de jogo em vez de alert
+        NotificationManager.mostrarFimDeJogo(
+            state.nomeJogador,
+            state.dificuldadeAtual,
+            state.acertos,
+            state.perdidos,
+            state.errados,
+            pontuacaoFinal
+        );
         
         state.acertos = state.perdidos = state.errados = 0;
         mostraPontuacao();
@@ -534,8 +753,10 @@ const WhacAMoleGame = (() => {
      */
     const start = () => {
         if (!state.nomeJogador) {
-            alert('Erro: Jogador não registrado!');
-            window.location.href = 'index.html';
+            NotificationManager.error('❌ Erro: Jogador não registrado! Redirecionando...');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
             return;
         }
         
@@ -629,8 +850,10 @@ const WhacAMoleGame = (() => {
         
         // Redirecionar se não houver jogador
         if (!state.nomeJogador) {
-            alert('Por favor, registre-se antes de jogar!');
-            window.location.href = 'index.html';
+            NotificationManager.warning('⚠️ Por favor, registre-se antes de jogar!');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2500);
             return;
         }
         

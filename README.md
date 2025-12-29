@@ -17,6 +17,10 @@ Jogo clássico de arcade onde o objetivo é acertar o maior número possível de
 - 🍎 **Compatível com iOS**: Suporte completo a touch events
 - ⏱️ **Timer de 60 segundos**: Contagem regressiva durante o jogo
 - 💾 **Armazenamento Local**: Salva recordes e preferências do jogador
+- 🔊 **Sistema de Áudio**: Efeitos sonoros com botão de mute acessível
+- 🔔 **Notificações Toast**: Sistema moderno não-bloqueante de mensagens
+- ♿ **Acessibilidade Completa**: ARIA, navegação por teclado, WCAG AA
+- 🎨 **Modal de Fim de Jogo**: Estatísticas visuais detalhadas
 
 ## 🎯 Sistema de Pontuação
 

@@ -1192,3 +1192,462 @@ body {
         page-break-inside: avoid;
     }
 }
+
+/* ===== SISTEMA DE NOTIFICAÇÕES TOAST ===== */
+
+/* Container principal de toasts */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+    max-width: 400px;
+    width: calc(100% - 40px);
+}
+
+/* Toast individual */
+.toast {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    pointer-events: auto;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 280px;
+    max-width: 100%;
+}
+
+/* Toast visível */
+.toast-show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Toast saindo */
+.toast-hide {
+    transform: translateX(400px);
+    opacity: 0;
+}
+
+/* Conteúdo do toast */
+.toast-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* Ícone do toast */
+.toast-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Mensagem do toast */
+.toast-message {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    word-wrap: break-word;
+}
+
+/* Botão de fechar toast */
+.toast-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 8px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.toast-close:hover {
+    color: #333;
+}
+
+.toast-close:focus {
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Tipos de toast */
+.toast-success {
+    border-left: 4px solid #22c55e;
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.toast-info {
+    border-left: 4px solid #3b82f6;
+}
+
+/* ===== MODAL DE FIM DE JOGO ===== */
+
+/* Overlay do modal */
+.game-over-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.game-over-overlay.show {
+    opacity: 1;
+}
+
+.game-over-overlay.fade-out {
+    opacity: 0;
+}
+
+/* Modal principal */
+.game-over-modal {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    color: white;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.game-over-overlay.show .game-over-modal {
+    transform: scale(1);
+}
+
+/* Header do modal */
+.game-over-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.game-over-header h2 {
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Botão de fechar modal */
+.modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.modal-close:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+/* Body do modal */
+.game-over-body {
+    padding: 24px;
+}
+
+.player-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+    text-align: center;
+}
+
+.difficulty {
+    font-size: 1rem;
+    margin: 0 0 24px;
+    text-align: center;
+    opacity: 0.9;
+}
+
+/* Grid de estatísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-icon {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* Bordas coloridas para diferentes estatísticas */
+.stat-success {
+    border-left: 4px solid #22c55e;
+}
+
+.stat-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.stat-error {
+    border-left: 4px solid #ef4444;
+}
+
+/* Pontuação final */
+.final-score {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.score-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.score-value {
+    display: block;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Mensagem de recorde salvo */
+.record-saved {
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    opacity: 0.95;
+    font-style: italic;
+}
+
+/* Botão jogar novamente */
+.btn-play-again {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+.btn-play-again:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-play-again:focus {
+    outline: 3px solid white;
+    outline-offset: 2px;
+}
+
+/* Responsividade para toasts */
+@media (max-width: 768px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+    }
+    
+    .toast {
+        min-width: auto;
+    }
+    
+    .toast-message {
+        font-size: 13px;
+    }
+}
+
+/* Responsividade para modal */
+@media (max-width: 600px) {
+    .game-over-modal {
+        border-radius: 12px;
+    }
+    
+    .game-over-header {
+        padding: 20px 20px 12px;
+    }
+    
+    .game-over-body {
+        padding: 20px;
+    }
+    
+    .stats-grid {
+        gap: 8px;
+    }
+    
+    .stat-item {
+        padding: 12px 8px;
+    }
+    
+    .stat-icon {
+        font-size: 24px;
+        margin-bottom: 6px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .score-value {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animações de entrada para elementos do modal */
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.game-over-overlay.show .game-over-header,
+.game-over-overlay.show .player-name,
+.game-over-overlay.show .difficulty {
+    animation: slideInFromTop 0.4s ease forwards;
+}
+
+.game-over-overlay.show .stat-item {
+    animation: slideInFromTop 0.4s ease forwards;
+}
+
+.game-over-overlay.show .stat-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.game-over-overlay.show .stat-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.game-over-overlay.show .stat-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.game-over-overlay.show .final-score {
+    animation: slideInFromTop 0.4s ease 0.4s forwards;
+    opacity: 0;
+}
+
+.game-over-overlay.show .record-saved {
+    animation: slideInFromTop 0.4s ease 0.5s forwards;
+    opacity: 0;
+}
+
+.game-over-overlay.show .btn-play-again {
+    animation: slideInFromTop 0.4s ease 0.6s forwards;
+    opacity: 0;
+}
+
+/* Redução de movimento para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    .toast,
+    .game-over-overlay,
+    .game-over-modal,
+    .modal-close,
+    .btn-play-again {
+        transition: none;
+        animation: none;
+    }
+    
+    .toast-show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    .game-over-overlay.show .game-over-modal {
+        transform: scale(1);
+    }
+    
+    .game-over-overlay.show .game-over-header,
+    .game-over-overlay.show .player-name,
+    .game-over-overlay.show .difficulty,
+    .game-over-overlay.show .stat-item,
+    .game-over-overlay.show .final-score,
+    .game-over-overlay.show .record-saved,
+    .game-over-overlay.show .btn-play-again {
+        animation: none;
+        opacity: 1;
+    }
+}
